@@ -1,0 +1,24 @@
+{
+    "name": "netanime",
+    "description": "This ad blocker and video control extension allows you to browse the web without being interrupted by annoying ads. In addition to blocking ads, it offers advanced video control, including the ability to pause, resume, skip forward or backward, and adjust playback speed. Enjoy a more pleasant and personalized browsing experience with this convenient and easy-to-use extension.",
+    "version": "0.1.0",
+    "background": {
+        "service_worker": "background.js"
+    },
+    "permissions": [
+        "activeTab",
+        "scripting",
+        "tabs"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "https://fusevideo.net/*"
+            ],
+            "js": [
+                "content.js"
+            ]
+        }
+    ],
+    "manifest_version": 3
+}
