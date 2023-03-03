@@ -1,17 +1,3 @@
-// // Envoyer un message au script d'arrière-plan pour obtenir l'URL de l'onglet courant
-// chrome.runtime.sendMessage({command: "getCurrentUrl"}, function(response) {
-//     // Supprimer les éléments <a> du DOM si l'URL contient "example.com"
-//     console.log(response.url);
-//     if (response.url != "") {
-//         console.log("Lien trouve");
-//         let links = document.getElementsByTagName('a');
-//         console.log(links);
-//         for (let i = 0; i < links.length; i++) {
-//             links[i].remove();
-//         }
-//     }
-// });
-
 function remove_links() {
     let links = document.getElementsByTagName('a');
     console.log(links.length);
@@ -21,14 +7,25 @@ function remove_links() {
     }
 }
 
-window.addEventListener("load", () => {
+function remove_all_links() {
     console.log("Window charge");
     let links = document.getElementsByTagName('a');
     while (links.length != 0) {
         remove_links();
     }
-    // window.document.addEventListener("DOMContentLoaded", () => {
-    //     console.log("Document charge");
-    //     remove_links();
-    // })
-})
+    return links.length
+}
+
+(
+    () => {
+        chrome.runtime.onMessage.addListener((msg, sender, response) => {
+            const { type } = msg;
+            if (type === "BLOCK_ADS") {
+                const state = remove_all_links();
+                // if (state === 0) {
+                //     response({message: "ADS_DELETED"})
+                // }
+            }
+        })
+    }
+)();
