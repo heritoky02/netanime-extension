@@ -8,9 +8,16 @@ chrome.tabs.onUpdated.addListener((tabId, tabInfo, tab) => {
         chrome.tabs.sendMessage(tabId, {
             type: "BLOCK_ADS",
             videoId: urlParameter.get("ref")
-        })
+        });
 
     } else {
         console.log("URL not found: ", tab.url)
     }
+})
+
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+    setTimeout(() => {}, 100);
+    const {videoId, time} = msg;
+    console.log(`From ${sender.id} to store ${time} seconds in ${videoId}`);
+    chrome.storage.local.set({[videoId]:JSON.stringify(time)})
 })

@@ -1,31 +1,66 @@
-function remove_links() {
-    let links = document.getElementsByTagName('a');
-    console.log(links.length);
-    console.log(links);
-    for (let i = 0; i < links.length; i++) {
-        links[i].remove();
-    }
+/**
+ * Remove all links (balise **a**) present in the document.
+ */
+function removeLinks() {
+  let links = document.getElementsByTagName("a");
+  for (let i = 0; i < links.length; i++) {
+    links[i].remove();
+  }
 }
 
-function remove_all_links() {
-    console.log("Window charge");
-    let links = document.getElementsByTagName('a');
-    while (links.length != 0) {
-        remove_links();
-    }
-    return links.length
+/**
+ * Wait for the page to load and remove all links in the document.
+ * @returns {int} Length of the links in the document, if 0 that's mean all links are removed, otherwise the length is greater than zero, that's mean failled to reomve a link.
+ */
+function removeAllLinks() {
+  let links = document.getElementsByTagName("a");
+  while (links.length != 0) {
+    removeLinks();
+  }
+  return links.length;
 }
 
-(
-    () => {
-        chrome.runtime.onMessage.addListener((msg, sender, response) => {
-            const { type } = msg;
-            if (type === "BLOCK_ADS") {
-                const state = remove_all_links();
-                // if (state === 0) {
-                //     response({message: "ADS_DELETED"})
-                // }
-            }
-        })
+function fetchData(videoId) {
+  return new Promise((resolve) => {
+    chrome.storage.local.get([videoId]).then((result) => {
+      resolve(result[videoId] ? JSON.parse(result[videoId]) : null);
+    });
+  });
+}
+
+async function checkTimeInStorage(videoId) {
+  const videos = document.getElementsByTagName("video");
+  const video = videos[0];
+
+  const value = await fetchData(videoId);
+  console.log(value);
+  if (value && confirm("Would you like to continue?")) {
+    video.click();
+    video.currentTime = value;
+  }
+}
+
+// ---------------------------------------------------------------- //
+
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  const { type } = msg;
+  if (type === "BLOCK_ADS") {
+    const state = removeAllLinks();
+    if (state === 0) {
+      console.log("All links removed");
+
+      const videos = document.getElementsByTagName("video");
+      const video = videos[0];
+
+      checkTimeInStorage(msg.videoId);
+
+      window.addEventListener("beforeunload", (e) => {
+        const videoId = msg.videoId;
+        chrome.runtime.sendMessage({
+          time: video.currentTime,
+          videoId: videoId,
+        });
+      });
     }
-)();
+  }
+});
