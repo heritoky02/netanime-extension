@@ -56,10 +56,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
       window.addEventListener("beforeunload", (e) => {
         const videoId = msg.videoId;
-        chrome.runtime.sendMessage({
-          time: video.currentTime,
-          videoId: videoId,
-        });
+        const time = video.currentTime;
+        console.log(`From ${sender.id} to store ${time} seconds in ${videoId}`);
+        chrome.storage.local.set({[videoId]:JSON.stringify(time)})
       });
     }
   }
