@@ -20,6 +20,17 @@ function removeAllLinks() {
   return links.length;
 }
 
+/**
+ * Store the last playing time of the video in seconds.
+ * @param {string} videoId ID of the video from the link
+ */
+function storeTime(videoId) {
+  const videos = document.getElementsByTagName("video");
+  const video = videos[0];
+  const time = video.currentTime;
+  chrome.storage.local.set({ [videoId]: JSON.stringify(time) });
+}
+
 function fetchData(videoId) {
   return new Promise((resolve) => {
     chrome.storage.local.get([videoId]).then((result) => {
@@ -34,8 +45,8 @@ async function checkTimeInStorage(videoId) {
 
   const value = await fetchData(videoId);
   console.log(value);
+  video.click();
   if (value && confirm("Would you like to continue?")) {
-    video.click();
     video.currentTime = value;
   }
 }
@@ -49,16 +60,15 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if (state === 0) {
       console.log("All links removed");
 
-      const videos = document.getElementsByTagName("video");
-      const video = videos[0];
-
       checkTimeInStorage(msg.videoId);
 
+      let start = false;
       window.addEventListener("beforeunload", (e) => {
-        const videoId = msg.videoId;
-        const time = video.currentTime;
-        console.log(`From ${sender.id} to store ${time} seconds in ${videoId}`);
-        chrome.storage.local.set({[videoId]:JSON.stringify(time)})
+        setTimeout(() => {}, 100)
+        start = true;
+      });
+      window.addEventListener("unload", (e) => {
+        if (start) storeTime(msg.videoId);
       });
     }
   }
