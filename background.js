@@ -1,9 +1,9 @@
 chrome.tabs.onUpdated.addListener((tabId, tabInfo, tab) => {
   if (
     tabInfo.status === "complete" &&
-    tab.url &&
-    tab.url.includes("fusevideo.net") &&
-    tab.url.includes("?ref")
+    /^https:\/\/fusevideo\.net\/[a-zA-Z0-9]+\/\w+\/\?ref=[a-zA-Z0-9]+$/.test(
+      tab.url
+    )
   ) {
     console.log("URL found: ", tab.url);
     const queryParameter = tab.url.split("?")[1];
