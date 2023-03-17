@@ -64,7 +64,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
       let start = false;
       window.addEventListener("beforeunload", (e) => {
-        setTimeout(() => {}, 100)
+        setTimeout(() => {}, 100);
         start = true;
       });
       window.addEventListener("unload", (e) => {
