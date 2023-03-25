@@ -3,6 +3,8 @@ chrome.tabs.onUpdated.addListener((tabId, tabInfo, tab) => {
     tabInfo.status === "complete" &&
     /^https:\/\/fusevideo\.net\/[a-zA-Z0-9]+\/\w+\/\?ref=[a-zA-Z0-9]+$/.test(
       tab.url
+    ) || /^https:\/\/pstream\.net\/[a-zA-Z0-9]+\/\w+\/\?ref=[a-zA-Z0-9]+$/.test(
+      tab.url
     )
   ) {
     console.log("URL found: ", tab.url);

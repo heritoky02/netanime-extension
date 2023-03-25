@@ -12,7 +12,8 @@
     "content_scripts": [
         {
             "matches": [
-                "https://fusevideo.net/*"
+                "https://fusevideo.net/*",
+                "https://www.pstream.net/*"
             ],
             "js": [
                 "content.js"
